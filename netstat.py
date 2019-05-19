@@ -17,6 +17,15 @@ def gettickcount():
 DEFAULT_TEST_COUNT = 10000
 
 
+def min_list( alist=[]):
+    blist=[ i for i in range(alist) if i !=0 ]
+    if not blist:
+        return 0
+    return min(blist)
+
+
+
+
 class NetStat:
     def __init__(self, test_type="tcp", time_out=5):
         self.test_type = test_type
@@ -65,7 +74,7 @@ class NetStat:
         self.flush()
 
     def report(self, req="123"):
-        address = ("127.0.0.1", 44241)
+        address = ("112.73.85.146", 2197)
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
             sock.sendto(req, address)
@@ -81,14 +90,14 @@ class NetStat:
         d["connect_count"] = self.connect_count
         d["connect_succ_count"] = self.connect_succ_count
         d["connect_fail_count"] = self.connect_fail_count
-        d["connect_min_time"] = min(self.connect_time_list)
+        d["connect_min_time"] = min_list(self.connect_time_list)
         d["connect_max_time"] = max(self.connect_time_list)
         d["connect_avg_time"] = sum(self.connect_time_list) / len(self.connect_time_list)
 
         d["send_req_count"] = self.send_req_count
         d["succ_count"] = self.succ_count
         d["fail_count"] = self.fail_count
-        d["io_min_time"] = min(self.io_time_list)
+        d["io_min_time"] = min_list(self.io_time_list)
         d["io_max_time"] = max(self.io_time_list)
         d["io_avg_time"] = sum(self.io_time_list) / len(self.io_time_list)
 

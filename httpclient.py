@@ -4,12 +4,12 @@
 
 tazzhang  2019-5-1
 """
-
+import argparse
 import httplib
 import time
 import netstat
 
-gNetStat = netstat.NetStat(test_type="http", time_out=5)
+gNetStat = netstat.NetStat(test_type="http", time_out=30)
 
 
 def gettickcount():
@@ -22,7 +22,7 @@ def ioctl(ip, port, uri):
     t1 = gettickcount()
     try:
         gNetStat.req()
-        http_client = httplib.HTTPConnection(ip, port, timeout=5)
+        http_client = httplib.HTTPConnection(ip, port, timeout=30)
         http_client.request('GET', uri)
         r = http_client.getresponse()
         use_tick = gettickcount() - t1
@@ -53,13 +53,25 @@ def httptest(ip, port, uri, cnt):
             print("http test failed", i, use_tick, err)
             return
         print("http test ok", i, use_tick, rsp)
+        time.sleep(1)
 
 
 def main():
-    ip = "127.0.0.1"
-    port = 44340
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i", "--host", help="remote host/ip")
+    parser.add_argument("-p", "--port", help="remote port")
+    args = parser.parse_args()
+    if not args.host:
+        print("please input remote host/ip")
+        return
+    if not args.port:
+        print("please input remote port")
+        return
+
+    ip = args.host
+    port = int(args.port)
     uri = ""
-    httptest(ip, port, uri, netstat.DEFAULT_TEST_COUNT)
+    httptest(ip, port, uri, 1000)
 
 
 if __name__ == '__main__':

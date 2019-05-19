@@ -115,7 +115,8 @@ def main():
 
     address = (args.host, int(args.port))
     print("will connect remote server:{0}".format(address))
-    tcptest(address, netstat.DEFAULT_TEST_COUNT)
+    for i in range(100):
+        tcptest(address, 100)
 
 
 if __name__ == '__main__':
