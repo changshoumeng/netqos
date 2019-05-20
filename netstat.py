@@ -65,13 +65,12 @@ class NetStat:
         self.test_num = test_num
         self.test_key = self.getTestKey()
 
-    def updateTestType(self):
+    def updateTestKey(self):
         current_test_key = self.getTestKey()
         if current_test_key != self.test_key:
             self.test_key = current_test_key
             self.reset()
 
-        self.test_type = "{0}/{1}/{2}/{3}".format(self.test_type, self.connect_num, self.test_num, self.test_key)
 
     def req(self):
         self.send_req_count += 1
@@ -114,9 +113,9 @@ class NetStat:
             sock.close()
 
     def flush(self):
-        self.updateTestType()
+        self.updateTestKey()
         d = {}
-        d["test_type"] = self.test_type
+        d["test_type"] = "{0}/{1}/{2}/{3}".format(self.test_type, self.connect_num, self.test_num, self.test_key)
         d["connect_count"] = self.connect_count
         d["connect_succ_count"] = self.connect_succ_count
         d["connect_fail_count"] = self.connect_fail_count
