@@ -64,10 +64,14 @@ def httptest(ip, port, uri, cnt):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("-k", "--key", help="client key")
     parser.add_argument("-i", "--host", help="remote host/ip")
     parser.add_argument("-p", "--port", help="remote port")
     parser.add_argument("-t", "--testnum", help="test number")
     args = parser.parse_args()
+    if not args.key:
+        print("please input key")
+        return
     if not args.host:
         print("please input remote host/ip")
         return
@@ -81,7 +85,7 @@ def main():
     ip = args.host
     port = int(args.port)
     uri = ""
-    gNetStat.setTestInfo(connect_num=0, test_num=testnum)
+    gNetStat.setTestInfo(client_key=args.key,connect_num=0, test_num=testnum)
     httptest(ip, port, uri, testnum)
 
 

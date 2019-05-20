@@ -83,10 +83,14 @@ class UdpClient:
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("-k", "--key", help="client key")
     parser.add_argument("-i", "--host", help="remote host/ip")
     parser.add_argument("-p", "--port", help="remote port")
     parser.add_argument("-t", "--testnum", help="test number")
     args = parser.parse_args()
+    if not args.key:
+        print("please input key")
+        return
     if not args.host:
         print("please input remote host/ip")
         return
@@ -100,7 +104,7 @@ def main():
     address = (args.host, int(args.port))
     print("will connect udp server:{0} testnum:{1}".format(address,testnum))
 
-    gNetStat.setTestInfo(connect_num=0,test_num=testnum)
+    gNetStat.setTestInfo(client_key=args.key,connect_num=0,test_num=testnum)
     client = UdpClient(address)
     client.start(cnt=testnum)
 

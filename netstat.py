@@ -60,7 +60,8 @@ class NetStat:
         otherStyleTime = time.strftime("%m%d%H", timeArray)
         return otherStyleTime
 
-    def setTestInfo(self, connect_num=0, test_num=0):
+    def setTestInfo(self, client_key="",connect_num=0, test_num=0):
+        self.client_key = client_key
         self.connect_num = connect_num
         self.test_num = test_num
         self.test_key = self.getTestKey()
@@ -115,7 +116,7 @@ class NetStat:
     def flush(self):
         self.updateTestKey()
         d = {}
-        d["test_type"] = "{0}/{1}/{2}/{3}".format(self.test_type, self.connect_num, self.test_num, self.test_key)
+        d["test_type"] = "{0}/{1}/{2}/{3}/{4}".format(self.test_type, self.connect_num, self.test_num, self.test_key,self.client_key)
         d["connect_count"] = self.connect_count
         d["connect_succ_count"] = self.connect_succ_count
         d["connect_fail_count"] = self.connect_fail_count
