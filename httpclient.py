@@ -76,7 +76,7 @@ def main():
     ip = args.host
     port = int(args.port)
     uri = ""
-    gNetStat.updateTestType(connect_num=0, test_num=testnum)
+    gNetStat.setTestInfo(connect_num=0, test_num=testnum)
     httptest(ip, port, uri, testnum)
 
 

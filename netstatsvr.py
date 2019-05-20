@@ -90,7 +90,7 @@ class UdpServer:
                 tm = int(tm / 1000)
 
                 failrate = 0 if j["send_req_count"] == 0 else float(j["fail_count"]) / j["send_req_count"]
-                failinfo = "{0}|{1}".format(j["fail_count"], failrate)
+                failinfo = "{0}|{1:.2f}".format(j["fail_count"], failrate)
 
                 html += '''
                  <tr>

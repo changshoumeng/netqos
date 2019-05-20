@@ -96,7 +96,7 @@ def main():
     address = (args.host, int(args.port))
     print("will connect udp server:{0} testnum:{1}".format(address,testnum))
 
-    gNetStat.updateTestType(connect_num=0,test_num=testnum)
+    gNetStat.setTestInfo(connect_num=0,test_num=testnum)
     client = UdpClient(address)
     client.start(cnt=testnum)
 

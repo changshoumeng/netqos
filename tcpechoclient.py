@@ -117,10 +117,6 @@ def tcptest_loop(address):
         i = 0
         while True:
             i += 1
-            if i == 100000:
-                i = 0
-                gNetStat.reset()
-                print("--------------reset----------------")
 
             gNetStat.req()
             is_ok, use_tick, rsp, err = ioctl(s, req)
@@ -162,7 +158,7 @@ def main():
     address = (args.host, int(args.port))
     print("will connect remote server:{0} connnum:{1} testnum:{2}".format(address, connnum, testnum))
 
-    gNetStat.updateTestType(connect_num=connnum, test_num=testnum)
+    gNetStat.setTestInfo(connect_num=connnum, test_num=testnum)
     if testnum == -1:
         tcptest_loop(address)
         return

@@ -17,13 +17,11 @@ def gettickcount():
 DEFAULT_TEST_COUNT = 10000
 
 
-def min_list( alist=[]):
-    blist=[ i for i in alist if i !=0 ]
+def min_list(alist=[]):
+    blist = [i for i in alist if i != 0]
     if not blist:
         return 0
     return min(blist)
-
-
 
 
 class NetStat:
@@ -43,8 +41,6 @@ class NetStat:
         self.begin_timestamp = gettickcount()
         self.end_timestamp = 0
 
-
-
     def reset(self):
         self.connect_count = 0
         self.connect_succ_count = 0
@@ -59,11 +55,23 @@ class NetStat:
         self.begin_timestamp = gettickcount()
         self.end_timestamp = 0
 
-
-    def updateTestType(self,connect_num=0,test_num=0):
+    def getTestKey(self):
         timeArray = time.localtime(time.time())
         otherStyleTime = time.strftime("%m%d%H", timeArray)
-        self.test_type = "{0}/{1}/{2}/{3}".format(self.test_type,connect_num,test_num,otherStyleTime)
+        return otherStyleTime
+
+    def setTestInfo(self, connect_num=0, test_num=0):
+        self.connect_num = connect_num
+        self.test_num = test_num
+        self.test_key = self.getTestKey()
+
+    def updateTestType(self):
+        current_test_key = self.getTestKey()
+        if current_test_key != self.test_key:
+            self.test_key = current_test_key
+            self.reset()
+
+        self.test_type = "{0}/{1}/{2}/{3}".format(self.test_type, self.connect_num, self.test_num, self.test_key)
 
     def req(self):
         self.send_req_count += 1
@@ -106,7 +114,7 @@ class NetStat:
             sock.close()
 
     def flush(self):
-
+        self.updateTestType()
         d = {}
         d["test_type"] = self.test_type
         d["connect_count"] = self.connect_count
