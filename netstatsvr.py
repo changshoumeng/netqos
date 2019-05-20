@@ -151,7 +151,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", "--port", help="bind port for udp")
     args = parser.parse_args()
-    port = 44241
+    port = 44340
     if args.port:
         port = int(args.port)
         if port <= 1024 or port >= 65535:
