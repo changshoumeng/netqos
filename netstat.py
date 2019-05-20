@@ -18,7 +18,7 @@ DEFAULT_TEST_COUNT = 10000
 
 
 def min_list( alist=[]):
-    blist=[ i for i in range(alist) if i !=0 ]
+    blist=[ i for i in alist if i !=0 ]
     if not blist:
         return 0
     return min(blist)
