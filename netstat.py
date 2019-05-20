@@ -43,6 +43,9 @@ class NetStat:
         self.begin_timestamp = gettickcount()
         self.end_timestamp = 0
 
+    def updateTestType(self,connect_num=0,test_num=0):
+        self.test_type = "{0}/{1}/{2}".format(self.test_type,connect_num,test_num)
+
     def req(self):
         self.send_req_count += 1
 

@@ -105,6 +105,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--host", help="remote host/ip")
     parser.add_argument("-p", "--port", help="remote port")
+    parser.add_argument("-c", "--connnum", help="connect number")
+    parser.add_argument("-t", "--testnum", help="test number")
     args = parser.parse_args()
     if not args.host:
         print("please input remote host/ip")
@@ -113,10 +115,20 @@ def main():
         print("please input remote port")
         return
 
+    connnum = 100
+    if args.connnum:
+        connnum = int(args.connnum)
+
+    testnum = 100
+    if args.testnum:
+        testnum = int(args.testnum)
+
     address = (args.host, int(args.port))
-    print("will connect remote server:{0}".format(address))
-    for i in range(100):
-        tcptest(address, 100)
+    print("will connect remote server:{0} connnum:{1} testnum:{2}".format(address, connnum, testnum))
+
+    gNetStat.updateTestType(connect_num=connnum, test_num=testnum)
+    for i in range(testnum):
+        tcptest(address, testnum)
 
 
 if __name__ == '__main__':

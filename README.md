@@ -35,3 +35,14 @@
     nohup python  netstatsvr.py   2>&1 1>&/dev/null  &
 
     外网开通44340 UDP端口
+
+
+# 测试运行
+
+    python tcpechoclient.py -i 127.0.0.1 -p 44140 -t 100000 -c 1
+    python tcpechoclient.py -i 127.0.0.1 -p 44140 -t 100 -c 100
+    python udpechoclient.py -i 127.0.0.1 -p 44140 -t 10000
+    python httpclient.py  -i 127.0.0.1 -p 44340 -t 1000
+
+# 测试结果
+    http://127.0.0.1:44340/stat.html

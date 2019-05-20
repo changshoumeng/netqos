@@ -60,6 +60,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--host", help="remote host/ip")
     parser.add_argument("-p", "--port", help="remote port")
+    parser.add_argument("-t", "--testnum", help="test number")
     args = parser.parse_args()
     if not args.host:
         print("please input remote host/ip")
@@ -67,11 +68,15 @@ def main():
     if not args.port:
         print("please input remote port")
         return
+    testnum = 1000
+    if args.testnum:
+        testnum = int(args.testnum)
 
     ip = args.host
     port = int(args.port)
     uri = ""
-    httptest(ip, port, uri, 1000)
+    gNetStat.updateTestType(connect_num=0, test_num=testnum)
+    httptest(ip, port, uri, testnum)
 
 
 if __name__ == '__main__':

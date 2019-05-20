@@ -80,6 +80,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--host", help="remote host/ip")
     parser.add_argument("-p", "--port", help="remote port")
+    parser.add_argument("-t", "--testnum", help="test number")
     args = parser.parse_args()
     if not args.host:
         print("please input remote host/ip")
@@ -87,12 +88,16 @@ def main():
     if not args.port:
         print("please input remote port")
         return
+    testnum = 10000
+    if args.testnum:
+        testnum = int(args.testnum)
 
     address = (args.host, int(args.port))
-    print("will connect udp server:{0}".format(address))
+    print("will connect udp server:{0} testnum:{1}".format(address,testnum))
 
+    gNetStat.updateTestType(connect_num=0,test_num=testnum)
     client = UdpClient(address)
-    client.start(cnt=netstat.DEFAULT_TEST_COUNT)
+    client.start(cnt=testnum)
 
 
 if __name__ == "__main__":
