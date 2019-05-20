@@ -88,6 +88,10 @@ class UdpServer:
             for test_type, j in d.items():
                 tm = int(j["begin_timestamp"])
                 tm = int(tm / 1000)
+
+                failrate= float(j["fail_count"])/j["send_req_count"]
+                failinfo="{0}|{1}".format(j["fail_count"],  failrate )
+
                 html += '''
                  <tr>
                  <td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td>
@@ -102,7 +106,7 @@ class UdpServer:
                             j["connect_avg_time"],
                             j["send_req_count"],
                             j["succ_count"],
-                            j["fail_count"],
+                            failinfo,
                             j["io_min_time"],
                             j["io_max_time"],
                             j["io_avg_time"],

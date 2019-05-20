@@ -13,26 +13,26 @@
 
 #### 1. 部署 tcpechoserver.py
 
-    nohup python  tcpechoserver.py   2>&1 1>&/dev/null  &
+    nohup python  tcpechoserver.py  2>&1 1>& log/tcpechoserver.log  &
     
     外网开通44140 TCP端口
 
 #### 2. 部署 udpechoserver.py
 
-    nohup python  udpechoserver.py   2>&1 1>&/dev/null  &
+    nohup python  udpechoserver.py   2>&1 1>& log/udpechoserver.log  &
 
     外网开通44140 UDP端口
 
 
 #### 3. 部署 httpserver.py
 
-    nohup python  httpserver.py   2>&1 1>&/dev/null  &
+    nohup python  httpserver.py   2>&1 1>& log/httpserver.log  &
 
     外网开通44340 TCP端口
 
 #### 4. 部署 netstatsvr.py
 
-    nohup python  netstatsvr.py   2>&1 1>&/dev/null  &
+    nohup python  netstatsvr.py   2>&1 1>& log/netstatsvr.log  &
 
     外网开通44340 UDP端口
 

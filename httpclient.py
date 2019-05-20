@@ -51,7 +51,8 @@ def httptest(ip, port, uri, cnt):
         is_ok, use_tick, rsp, err = ioctl(ip, port, uri)
         if not is_ok:
             print("http test failed", i, use_tick, err)
-            return
+            time.sleep(3)
+            continue
         print("http test ok", i, use_tick, rsp)
         time.sleep(1)
 
