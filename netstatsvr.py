@@ -23,6 +23,7 @@ class UdpServer:
         self.port = int(port)
         self.statlist = {}
         self.flag = 0
+        self.last_dump_time= time.time()
         pass
 
     def process_msg(self, client_ip, msg):
@@ -37,6 +38,11 @@ class UdpServer:
             print("json loads error:{0} msg:{1}".format(e, msg))
 
     def dump_list(self):
+        if time.time() - self.last_dump_time <= 5:
+            return
+
+        self.last_dump_time = time.time()
+
         self.flag = 0
 
         html = '''
