@@ -97,8 +97,7 @@ def tcptest(address, cnt):
             if not is_ok:
                 print("ioctl failed ", i, address, use_tick, err)
                 gNetStat.rspfail(use_tick)
-                time.sleep(3)
-                continue
+                return
             print("ioctl ok ", i, address, use_tick, len(rsp))
             gNetStat.rspsucc(use_tick)
 
