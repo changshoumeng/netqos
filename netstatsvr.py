@@ -9,7 +9,7 @@ import socket
 import json
 import time
 
-socket.setdefaulttimeout(2)
+socket.setdefaulttimeout(5)
 
 
 def time2datestr(timeStamp):

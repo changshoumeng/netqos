@@ -43,8 +43,27 @@ class NetStat:
         self.begin_timestamp = gettickcount()
         self.end_timestamp = 0
 
+
+
+    def reset(self):
+        self.connect_count = 0
+        self.connect_succ_count = 0
+        self.connect_fail_count = 0
+
+        self.send_req_count = 0
+        self.recv_rsp_count = 0
+        self.io_time_list = [0]
+        self.connect_time_list = [0]
+        self.succ_count = 0
+        self.fail_count = 0
+        self.begin_timestamp = gettickcount()
+        self.end_timestamp = 0
+
+
     def updateTestType(self,connect_num=0,test_num=0):
-        self.test_type = "{0}/{1}/{2}".format(self.test_type,connect_num,test_num)
+        timeArray = time.localtime(time.time())
+        otherStyleTime = time.strftime("%m%d%H", timeArray)
+        self.test_type = "{0}/{1}/{2}/{3}".format(self.test_type,connect_num,test_num,otherStyleTime)
 
     def req(self):
         self.send_req_count += 1
@@ -77,7 +96,7 @@ class NetStat:
         self.flush()
 
     def report(self, req="123"):
-        address = ("112.73.85.146", 2197)
+        address = ("103.21.119.8", 44340)
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
             sock.sendto(req, address)
