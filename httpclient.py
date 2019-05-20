@@ -47,7 +47,12 @@ def ioctl(ip, port, uri):
 
 
 def httptest(ip, port, uri, cnt):
-    for i in range(cnt):
+    i = 0
+    while True:
+        i += 1
+        if cnt > 0 and i >= cnt:
+            break
+
         is_ok, use_tick, rsp, err = ioctl(ip, port, uri)
         if not is_ok:
             print("http test failed", i, use_tick, err)

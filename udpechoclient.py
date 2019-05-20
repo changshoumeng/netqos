@@ -61,7 +61,11 @@ class UdpClient:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
             req = "ABCD"
-            for i in range(cnt):
+            i = 0
+            while True:
+                i += 1
+                if cnt > 0 and i >= cnt:
+                    break
                 gNetStat.req()
                 is_ok, use_tick, rsp, err = self.ioctl(sock, req)
                 if not is_ok:

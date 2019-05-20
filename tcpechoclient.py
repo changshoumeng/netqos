@@ -86,37 +86,11 @@ def tcptest(address, cnt):
     gNetStat.connsucc(use_tick)
     try:
         req = "ABCD"
-        for i in range(cnt):
-            gNetStat.req()
-            is_ok, use_tick, rsp, err = ioctl(s, req)
-            if not is_ok:
-                print("ioctl failed ", i, address, use_tick, err)
-                gNetStat.rspfail(use_tick)
-                time.sleep(3)
-                continue
-            print("ioctl ok ", i, address, use_tick, len(rsp))
-            gNetStat.rspsucc(use_tick)
-
-            time.sleep(0.1)
-    finally:
-        s.close()
-
-
-def tcptest_loop(address):
-    gNetStat.conn()
-    is_ok, use_tick, s, err = ioconn(address)
-
-    if not is_ok:
-        gNetStat.connfail(use_tick)
-        print("connect failed ", address, use_tick, err)
-        return
-    print("connect ok ", address, use_tick)
-    gNetStat.connsucc(use_tick)
-    try:
-        req = "ABCD"
         i = 0
         while True:
             i += 1
+            if cnt > 0 and i >= cnt:
+                break
 
             gNetStat.req()
             is_ok, use_tick, rsp, err = ioctl(s, req)
@@ -131,6 +105,9 @@ def tcptest_loop(address):
             time.sleep(0.1)
     finally:
         s.close()
+
+
+
 
 
 def main():
@@ -159,9 +136,6 @@ def main():
     print("will connect remote server:{0} connnum:{1} testnum:{2}".format(address, connnum, testnum))
 
     gNetStat.setTestInfo(connect_num=connnum, test_num=testnum)
-    if testnum == -1:
-        tcptest_loop(address)
-        return
 
     for i in range(connnum):
         tcptest(address, testnum)
