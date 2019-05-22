@@ -10,7 +10,7 @@ import time
 
 import netstat
 
-socket.setdefaulttimeout(5)
+socket.setdefaulttimeout(60)
 
 
 class CONFIG:

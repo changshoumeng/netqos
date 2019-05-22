@@ -13,7 +13,7 @@ import time
 
 import netstat
 
-socket.setdefaulttimeout(5)
+socket.setdefaulttimeout(60)
 
 
 class CONFIG:
@@ -102,7 +102,7 @@ def tcptest(address, cnt):
             is_ok, use_tick, rsp, err = ioctl(s, req)
             if not is_ok:
                 print("ioctl failed ", i, address, use_tick, err)
-                gNetStat.rspfail(use_tick)
+
                 stat.endFail(use_tick)
                 return
             print("ioctl ok ", i, address, use_tick, len(rsp))
