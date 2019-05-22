@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+"""
+
+
+tazzhang  2019-5-1
+"""
 import time_util
 import os
 import time
@@ -64,11 +70,13 @@ class ts(object):
     def addKey(self, key):
         for k in self.keys:
             if k == key:
+                print("repeat key:{0}".format(key))
                 return
-            self.keys.append(key)
+        self.keys.append(key)
+        print("add key:{0}".format(key))
 
     def cnnTsAdd(self, key, timestamp, usetick, code):
-        print("cnnTs {0} {1} {2} {3}".format(key, timestamp, usetick, code))
+        # print("cnnTs {0} {1} {2} {3}".format(key, timestamp, usetick, code))
         if key not in self.cnnTs:
             self.cnnTs[key] = []
             self.addKey(key)
@@ -80,7 +88,7 @@ class ts(object):
         self.cnnTs[key] = tslist
 
     def ioTsAdd(self, key, timestamp, usetick, code):
-        print("ioTs {0} {1} {2} {3}".format(key, timestamp, usetick, code))
+        # print("ioTs {0} {1} {2} {3}".format(key, timestamp, usetick, code))
         if key not in self.ioTs:
             self.ioTs[key] = []
             self.addKey(key)
@@ -118,6 +126,9 @@ class ts(object):
         return html
 
     def dumphtml(self):
+        if len(self.keys) == 0:
+            return
+
         html = '''
                 <!DOCTYPE html>
                 <html lang="en">
@@ -158,12 +169,14 @@ class ts(object):
             if k in self.cnnTs:
                 r = tl(self.cnnTs[k])
                 r.start()
-                html += self.formatTs("conn", r)
+                if r.begin > 0:
+                    html += self.formatTs("conn", r)
 
             if k in self.ioTs:
                 r = tl(self.ioTs[k])
                 r.start()
-                html += self.formatTs("io", r)
+                if r.begin > 0:
+                    html += self.formatTs("io", r)
 
             html += ''' </table> '''
         html += '''</body></html>'''
@@ -182,3 +195,15 @@ class ts(object):
 
         with open(fn, "w") as wf:
             wf.write(html)
+
+
+def main():
+    t = ts()
+    for i in xrange(52):
+        t.ioTsAdd("k1", 11111, 11 * i + 1, 0)
+    t.dumphtml()
+    pass
+
+
+if __name__ == '__main__':
+    main()
