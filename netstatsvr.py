@@ -28,13 +28,14 @@ class UdpServer:
             p = protocol.ClientLogPkg()
             if p.unpack(msg) <= 0:
                 return
-            key = "{0}/{1}/{2}/{3}:{4}".format(client_ip,
-                                               p.appkey,
-                                               net_util.netint2ipstr(p.localip),
-                                               net_util.netint2ipstr(p.remoteip),
-                                               p.remoteport,
-                                               )
-             
+            key = "{0}/{1}{2}/{3}=>{4}:{5}".format(client_ip,
+                                                   p.appkey,
+                                                   p.system,
+                                                   net_util.netint2ipstr(p.localip),
+                                                   net_util.netint2ipstr(p.remoteip),
+                                                   p.remoteport,
+                                                   )
+
             if p.msg == "conn":
                 self.ts.cnnTsAdd(key, p.timestamp, p.usetick, p.code)
             elif p.msg == "io":
@@ -55,7 +56,7 @@ class UdpServer:
         while True:
             try:
                 data, client_addr = sock.recvfrom(1024)
-                #print("recv from {0} {1}".format(client_addr, len(data)  ))
+                # print("recv from {0} {1}".format(client_addr, len(data)  ))
                 client_ip = client_addr[0]
                 self.process_msg(client_ip, data)
                 self.flag = 1

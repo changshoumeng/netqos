@@ -133,7 +133,7 @@ class ts(object):
             html += '''<p>{0}</p>'''.format(k)
             html += '''
              <table><tr>
-                  <td>---</td>
+                  <td></td>
                   <td>begin</td>
                   <td>end</td>
                   <td>succ</td>
