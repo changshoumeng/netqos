@@ -52,15 +52,22 @@ class ts(object):
     def __init__(self):
         self.cnnTs = {}
         self.ioTs = {}
-        self.keys = set()
+        self.keys = []
+
         self.tm = time_util.ymdh(time.time())
         self.dir = "stat"
+
+    def addKey(self,key):
+        for k in self.keys:
+            if k == key:
+                return
+            self.keys.append(key)
 
     def cnnTsAdd(self, key, timestamp, usetick, code):
         print("cnnTs {0} {1} {2} {3}".format(key, timestamp, usetick, code))
         if key not in self.cnnTs:
             self.cnnTs[key] = []
-            self.keys.add(key)
+            self.addKey(key)
 
         tslist = self.cnnTs[key]
         if len(tslist) > 100000:
@@ -72,7 +79,7 @@ class ts(object):
         print("ioTs {0} {1} {2} {3}".format(key, timestamp, usetick, code))
         if key not in self.ioTs:
             self.ioTs[key] = []
-            self.keys.add(key)
+            self.addKey(key)
 
         tslist = self.ioTs[key]
         if len(tslist) > 100000:
