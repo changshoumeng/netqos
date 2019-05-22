@@ -10,9 +10,11 @@ import time
 
 import netstat
 
-gNetStat = netstat.NetStat(test_type="udp", time_out=5)
-
 socket.setdefaulttimeout(5)
+
+
+class CONFIG:
+    APPKEY = "UDP"
 
 
 def gettickcount():
@@ -66,15 +68,18 @@ class UdpClient:
                 i += 1
                 if cnt > 0 and i >= cnt:
                     break
-                gNetStat.req()
+
+                stat = netstat.NetStat(CONFIG.APPKEY, self.address[0], self.address[1])
+                stat.start("io")
+
                 is_ok, use_tick, rsp, err = self.ioctl(sock, req)
                 if not is_ok:
                     print("ioctl failed ", i, self.address, use_tick, err)
-                    gNetStat.rspfail(use_tick)
+                    stat.endFail(use_tick)
                     time.sleep(3)
                     continue
                 print("ioctl ok ", i, self.address, use_tick, len(rsp))
-                gNetStat.rspsucc(use_tick)
+                stat.endSucc(use_tick)
                 time.sleep(0.1)
 
         finally:
@@ -102,9 +107,9 @@ def main():
         testnum = int(args.testnum)
 
     address = (args.host, int(args.port))
-    print("will connect udp server:{0} testnum:{1}".format(address,testnum))
-
-    gNetStat.setTestInfo(client_key=args.key,connect_num=0,test_num=testnum)
+    print("will connect udp server:{0} testnum:{1}".format(address, testnum))
+    CONFIG.APPKEY = "{0}-{1}-{2}".format(CONFIG.APPKEY,args.key, testnum)
+    print(CONFIG.APPKEY)
     client = UdpClient(address)
     client.start(cnt=testnum)
 

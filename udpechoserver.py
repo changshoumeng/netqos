@@ -17,7 +17,7 @@ class UdpServer:
         while True:
             try:
                 data, client_addr = sock.recvfrom(1024)
-                print("recv from {0} {1}".format(client_addr, data))
+                #print("recv from {0} {1}".format(client_addr, data))
                 sock.sendto(data, client_addr)
             except socket.timeout:
                 pass

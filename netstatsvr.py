@@ -6,36 +6,41 @@ tazzhang  2019-5-1
 """
 import argparse
 import socket
-import json
+
 import time
+import netstatlist
+import protocol
+import net_util
 
 socket.setdefaulttimeout(5)
-
-
-def time2datestr(timeStamp):
-    timeArray = time.localtime(timeStamp)
-    otherStyleTime = time.strftime("%Y%m%d %H:%M:%S", timeArray)
-    return otherStyleTime
 
 
 class UdpServer:
     def __init__(self, port):
         self.port = int(port)
-        self.statlist = {}
+        self.ts = netstatlist.ts()
         self.flag = 0
-        self.last_dump_time= time.time()
+        self.last_dump_time = time.time()
         pass
 
     def process_msg(self, client_ip, msg):
         try:
-            j = json.loads(msg)
-            test_type = j["test_type"]
-            if client_ip not in self.statlist:
-                self.statlist[client_ip] = {}
-            self.statlist[client_ip][test_type] = j
-            self.flag = 1
+            p = protocol.ClientLogPkg()
+            if p.unpack(msg) <= 0:
+                return
+            key = "{0}/{1}/{2}/{3}:{4}".format(client_ip,
+                                               p.appkey,
+                                               net_util.netint2ipstr(p.localip),
+                                               net_util.netint2ipstr(p.remoteip),
+                                               p.remoteport,
+                                               )
+             
+            if p.msg == "conn":
+                self.ts.cnnTsAdd(key, p.timestamp, p.usetick, p.code)
+            elif p.msg == "io":
+                self.ts.ioTsAdd(key, p.timestamp, p.usetick, p.code)
         except Exception as e:
-            print("json loads error:{0} msg:{1}".format(e, msg))
+            print(" loads error:{0} msg:{1}".format(e, msg))
 
     def dump_list(self):
         if time.time() - self.last_dump_time <= 5:
@@ -44,100 +49,16 @@ class UdpServer:
         self.last_dump_time = time.time()
 
         self.flag = 0
-
-        html = '''
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <title>stat</title>
-                <style type="text/css">
-        table
-        {
-            border-collapse: collapse;
-            border: none;
-            width: 200px;
-        }
-        td
-        {
-            border: solid #000 1px;
-        }
-    </style>
-        </head>
-        <body>
-            '''
-
-        for client_ip, d in self.statlist.items():
-            html += '''
-                <p>{0}</p>
-                '''.format(client_ip)
-            html += '''
-            <table><tr>
-                 <td>test_type</td>
-                 <td>conn</td>
-                 <td>conn_succ</td>
-                 <td>conn_fail</td>
-                 <td>conn_min_time</td>
-                 <td>conn_max_time</td>
-                 <td>conn_avg_time</td>
-                 <td>send_req</td>
-                 <td>succ_count</td>
-                 <td>fail_count</td>
-                 <td>io_min_time</td>
-                 <td>io_max_time</td>
-                 <td>io_avg_time</td>
-                 <td>begin_timestamp</td>
-                 <td>test_time</td>
-                 </tr>
-            
-            '''
-            for test_type, j in d.items():
-                tm = int(j["begin_timestamp"])
-                tm = int(tm / 1000)
-
-                failrate = 0 if j["send_req_count"] == 0 else float(j["fail_count"]) / j["send_req_count"]
-                failinfo = "{0}|{1:.5f}".format(j["fail_count"], failrate)
-
-                html += '''
-                 <tr>
-                 <td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td>
-                 <td>{6}</td><td>{7}</td><td>{8}</td><td>{9}</td><td>{10}</td><td>{11}</td>
-                 <td>{12}</td><td>{13}</td><td>{14}</td>
-                 '''.format(j["test_type"],
-                            j["connect_count"],
-                            j["connect_succ_count"],
-                            j["connect_fail_count"],
-                            j["connect_min_time"],
-                            j["connect_max_time"],
-                            j["connect_avg_time"],
-                            j["send_req_count"],
-                            j["succ_count"],
-                            failinfo,
-                            j["io_min_time"],
-                            j["io_max_time"],
-                            j["io_avg_time"],
-                            time2datestr(tm),
-                            j["test_time"],
-                            )
-
-            html += '''
-              </table>
-               '''
-        html += '''
-        </body>
-        </html>
-        '''
-
-        with open("stat.html", "w") as wf:
-            wf.write(html)
+        self.ts.dumphtml()
 
     def ioctl(self, sock):
         while True:
             try:
                 data, client_addr = sock.recvfrom(1024)
-                print("recv from {0} {1}".format(client_addr, data))
+                #print("recv from {0} {1}".format(client_addr, len(data)  ))
                 client_ip = client_addr[0]
                 self.process_msg(client_ip, data)
+                self.flag = 1
             except socket.timeout:
                 pass
             except Exception as e:

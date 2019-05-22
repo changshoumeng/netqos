@@ -15,7 +15,9 @@ import netstat
 
 socket.setdefaulttimeout(5)
 
-gNetStat = netstat.NetStat(test_type="tcp", time_out=5)
+
+class CONFIG:
+    APPKEY = "TCP"
 
 
 def gettickcount():
@@ -75,15 +77,17 @@ def ioconn(address):
 
 
 def tcptest(address, cnt):
-    gNetStat.conn()
+    stat = netstat.NetStat(CONFIG.APPKEY, address[0], address[1])
+    stat.start("conn")
     is_ok, use_tick, s, err = ioconn(address)
 
     if not is_ok:
-        gNetStat.connfail(use_tick)
+        stat.endFail(use_tick)
         print("connect failed ", address, use_tick, err)
         return
     print("connect ok ", address, use_tick)
-    gNetStat.connsucc(use_tick)
+    stat.endSucc(use_tick)
+
     try:
         req = "ABCD"
         i = 0
@@ -92,21 +96,20 @@ def tcptest(address, cnt):
             if cnt > 0 and i >= cnt:
                 break
 
-            gNetStat.req()
+            stat = netstat.NetStat(CONFIG.APPKEY, address[0], address[1])
+            stat.start("io")
+
             is_ok, use_tick, rsp, err = ioctl(s, req)
             if not is_ok:
                 print("ioctl failed ", i, address, use_tick, err)
                 gNetStat.rspfail(use_tick)
+                stat.endFail(use_tick)
                 return
             print("ioctl ok ", i, address, use_tick, len(rsp))
-            gNetStat.rspsucc(use_tick)
-
+            stat.endSucc(use_tick)
             time.sleep(0.1)
     finally:
         s.close()
-
-
-
 
 
 def main():
@@ -139,9 +142,8 @@ def main():
     address = (args.host, int(args.port))
     print("will connect remote server:{0} connnum:{1} testnum:{2}".format(address, connnum, testnum))
 
-
-    gNetStat.setTestInfo(client_key=args.key,connect_num=connnum, test_num=testnum)
-
+    CONFIG.APPKEY = "{0}-{1}-{2}-{3}".format(CONFIG.APPKEY, args.key, connnum, testnum)
+    print(CONFIG.APPKEY)
     for i in range(connnum):
         tcptest(address, testnum)
 

@@ -20,7 +20,7 @@ class MyStreamRequestHandler(StreamRequestHandler):
                 if not data:
                     print("closed {0}".format(self.client_address))
                     return
-                print("receive from {0} {1}".format(self.client_address, data))
+                # print("receive from {0} {1}".format(self.client_address, data))
                 self.wfile.write(data)
             except:
                 traceback.print_exc()
