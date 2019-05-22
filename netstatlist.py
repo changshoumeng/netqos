@@ -14,6 +14,7 @@ class tl(object):
         self.succ = 0
         self.fail = 0
         self.sum = 0
+        self.failrate = ""
 
     def start(self):
         if len(self.alist) < 2:
@@ -36,6 +37,9 @@ class tl(object):
 
         if self.succ > 0:
             self.avg = self.sum / self.succ
+            if self.fail > 0:
+                n = float(self.fail * 100) / float(self.fail + self.succ)
+                self.failrate = "{0:.5f}%".format(n)
 
 
 class te(object):
@@ -57,7 +61,7 @@ class ts(object):
         self.tm = time_util.ymdh(time.time())
         self.dir = "stat"
 
-    def addKey(self,key):
+    def addKey(self, key):
         for k in self.keys:
             if k == key:
                 return
@@ -94,17 +98,17 @@ class ts(object):
                 <td>{1}</td>
                 <td>{2}</td>
                 <td>{3}</td>
-                <td>{4}</td>
-                <td>{5}</td>
+                <td>{4}|{5}</td>
                 <td>{6}</td>
-                <td>{7}</td> 
+                <td>{7}</td>
+                <td>{8}</td> 
                 </tr>
               """.format(
             ty,
             time_util.ymdhms(r.begin / 1000),
             time_util.ymdhms(r.end / 1000),
             r.succ,
-            r.fail,
+            r.fail, r.failrate,
             r.min,
             r.max,
             r.avg

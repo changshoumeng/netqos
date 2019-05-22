@@ -13,3 +13,6 @@ def ymdhms(timeStamp):
 def ymdh(timeStamp):
     timeArray = time.localtime(timeStamp)
     return time.strftime("%Y%m%d%H", timeArray)
+
+
+
