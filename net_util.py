@@ -3,12 +3,18 @@ import uuid
 import sys
 import struct
 
+
 def gethostname():
     return socket.getfqdn(socket.gethostname())
 
 
 def getipbyname(hostname):
-    return socket.gethostbyname(hostname)
+    if not hostname:
+        return "127.0.0.1"
+    try:
+        return socket.gethostbyname(hostname)
+    except Exception as e:
+        return ""
 
 
 def getmacaddress():
