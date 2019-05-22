@@ -31,7 +31,7 @@ def ipstr2netint(ipstr):
 
 
 def ipstr2hostint(ipstr):
-    return socket.ntohl(IpStr2NetInt(ipstr))
+    return socket.ntohl(ipstr2netint(ipstr))
 
 
 def netint2ipstr(netint):
@@ -39,7 +39,7 @@ def netint2ipstr(netint):
 
 
 def hostint2ipstr(hostint):
-    return NetInt2IpStr(socket.htonl(hostint))
+    return netint2ipstr(socket.htonl(hostint))
 
 
 def main():
