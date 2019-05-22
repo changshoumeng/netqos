@@ -10,11 +10,12 @@ def gethostname():
 
 def getipbyname(hostname):
     if not hostname:
-        return "127.0.0.1"
+        return "127.0.1.10"
     try:
         return socket.gethostbyname(hostname)
     except Exception as e:
-        return ""
+        print("getipbyname {0} -> {1}".format(hostname, str(e)))
+        return "127.0.1.20"
 
 
 def getmacaddress():
