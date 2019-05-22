@@ -76,6 +76,25 @@ class ts(object):
         self.keys.append(key)
         print("add key:{0}".format(key))
 
+    def reducelist(self, alist):
+        min_pos, max_pos = 0, 0
+        min_val = 10000000
+        max_val = 0
+        for i in range(len(alist)):
+            a = alist[i]
+            if a.usetick > max_val:
+                max_val = a.usetick
+                max_pos = i
+                continue
+            if a.usetick < min_val:
+                min_val = a.usetick
+                min_pos = i
+                continue
+        x = min(min_pos, max_pos)
+        y = max(min_pos, max_pos)
+        b = alist[0:x] + alist[x + 1:y] + alist[y + 1:]
+        return b
+
     def cnnTsAdd(self, key, timestamp, usetick, code):
         # print("cnnTs {0} {1} {2} {3}".format(key, timestamp, usetick, code))
         if key not in self.cnnTs:
@@ -84,7 +103,7 @@ class ts(object):
 
         tslist = self.cnnTs[key]
         if len(tslist) > 100000:
-            tslist = tslist[1:]
+            tslist = self.reducelist(tslist)
         tslist.append(te(timestamp, usetick, code))
         self.cnnTs[key] = tslist
 
@@ -96,7 +115,7 @@ class ts(object):
 
         tslist = self.ioTs[key]
         if len(tslist) > 100000:
-            tslist = tslist[1:]
+            tslist = self.reducelist(tslist)
         tslist.append(te(timestamp, usetick, code))
         self.ioTs[key] = tslist
 
