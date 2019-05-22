@@ -153,17 +153,17 @@ class ts(object):
                     '''
         for k in self.keys:
 
-            html += '''<p>{0}</p>'''.format(k)
+            html += '''<p>客户端：{0}</p>'''.format(k)
             html += '''
              <table><tr>
-                  <td></td>
-                  <td>begin</td>
-                  <td>end</td>
-                  <td>succ</td>
-                  <td>fail</td>
-                  <td>min</td>
-                  <td>max</td>
-                  <td>avg</td> 
+                  <td>测试指标</td>
+                  <td>开始时间</td>
+                  <td>结束时间</td>
+                  <td>成功个数</td>
+                  <td>失败个数</td>
+                  <td>最小时延</td>
+                  <td>最大时延</td>
+                  <td>平均时延</td> 
                   </tr>
              '''
 
@@ -171,7 +171,7 @@ class ts(object):
                 r = tl(self.cnnTs[k])
                 r.start()
                 if r.begin > 0:
-                    html += self.formatTs("conn", r)
+                    html += self.formatTs("connection", r)
 
             if k in self.ioTs:
                 r = tl(self.ioTs[k])
