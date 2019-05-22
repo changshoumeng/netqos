@@ -43,8 +43,9 @@ class tl(object):
 
         if self.succ > 0:
             self.avg = self.sum / self.succ
-            if self.fail > 0:
-                n = float(self.fail * 100) / float(self.fail + self.succ)
+            total = self.fail + self.succ
+            if self.fail > 0 and total >= 1000:
+                n = float(self.fail * 100) / float(total)
                 self.failrate = "{0:.5f}%".format(n)
 
 
