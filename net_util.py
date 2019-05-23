@@ -43,6 +43,10 @@ def hostint2ipstr(hostint):
     return netint2ipstr(socket.htonl(hostint))
 
 
+def is_win32():
+    return sys.platform == 'win32'
+
+
 def main():
     hostname = gethostname()
     ip = getipbyname(hostname)

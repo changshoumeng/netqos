@@ -6,7 +6,9 @@ tazzhang  2019-5-1
 """
 
 import argparse
+import signal
 
+import os
 import socket
 
 import time
@@ -17,13 +19,39 @@ import random
 
 import threading
 
+import multiprocessing
+
+import net_util
+
 socket.setdefaulttimeout(60)
+
+
+class GracefulExitException(Exception):
+    @staticmethod
+    def sigterm_handler(signum, frame):
+        raise GracefulExitException()
+
+    pass
+
+
+class GracefulExitEvent(object):
+    def __init__(self):
+        self.exit_event = multiprocessing.Event()
+        signal.signal(signal.SIGTERM, GracefulExitException.sigterm_handler)
+        pass
+
+    def is_stop(self):
+        return self.exit_event.is_set()
+
+    def notify_stop(self):
+        self.exit_event.set()
 
 
 class CONFIG:
     APPKEY = "TCP"
     address = ("", 0)
     connnum = 10
+    graceful_event = GracefulExitEvent()
 
 
 def gettickcount():
@@ -84,9 +112,18 @@ def ioconn(address):
 
 def tcpconntest():
     address = CONFIG.address
-    cnt = CONFIG.connnum
-    print("start worker thread for tcpconntest:{0} {1} ".format(address, cnt))
-    for i in range(cnt):
+    print("start worker thread for tcpconntest:{0}".format(address))
+    i = 0
+    while True:
+        i += 1
+        if CONFIG.graceful_event.is_stop():
+            print("stop worker thread then exit")
+            break
+
+        if net_util.is_win32() and i > 10:
+            print("stop worker thread then exit win32")
+            break
+
         stat = netstat.NetStat(CONFIG.APPKEY, address[0], address[1])
         stat.start("conn")
         is_ok, use_tick, s, err = ioconn(address)
@@ -121,7 +158,6 @@ def tcptest(address, cnt):
 
             if i > random.randint(10, cnt):
                 break
-
             stat = netstat.NetStat(CONFIG.APPKEY, address[0], address[1])
             stat.start("io")
 
@@ -173,12 +209,20 @@ def main():
 
     CONFIG.address = address
     CONFIG.connnum = connnum
+    CONFIG.stopworker = False
 
     t1 = threading.Thread(target=tcpconntest, name="tcpconntest")
     t1.start()
 
-    for i in range(connnum):
-        tcptest(address, testnum)
+    try:
+        for i in range(connnum):
+            tcptest(address, testnum)
+    except  GracefulExitException:
+        print("=======worker {0} got graceful exit exception========".format(os.getpid()))
+        CONFIG.graceful_event.notify_stop()
+        print("===================================================")
+
+    print("=========END===")
 
 
 if __name__ == '__main__':
