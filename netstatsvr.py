@@ -19,7 +19,6 @@ class UdpServer:
     def __init__(self, port):
         self.port = int(port)
         self.ts = netstatlist.ts()
-        self.flag = 0
         self.last_dump_time = time.time()
         pass
 
@@ -48,8 +47,6 @@ class UdpServer:
             return
 
         self.last_dump_time = time.time()
-
-        self.flag = 0
         self.ts.dumphtml()
 
     def ioctl(self, sock):
@@ -59,14 +56,12 @@ class UdpServer:
                 # print("recv from {0} {1}".format(client_addr, len(data)  ))
                 client_ip = client_addr[0]
                 self.process_msg(client_ip, data)
-                self.flag = 1
             except socket.timeout:
                 pass
             except Exception as e:
                 print("excetipn:{0}".format(e))
 
-            if self.flag == 1:
-                self.dump_list()
+            self.dump_list()
 
     def serve_forever(self):
         addr = ("", self.port)

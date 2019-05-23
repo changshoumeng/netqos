@@ -67,6 +67,7 @@ class ts(object):
 
         self.tm = time_util.ymdh(time.time())
         self.dir = "stat"
+        self.f = 0
 
     def addKey(self, key):
         for k in self.keys:
@@ -75,6 +76,14 @@ class ts(object):
                 return
         self.keys.append(key)
         print("add key:{0}".format(key))
+
+
+    def delKey(self, key):
+        for i in range(len(self.keys)):
+            if self.keys[i] == key:
+                print("del key:{0}".format(key))
+                del self.keys[i]
+                return
 
     def reducelist(self, alist):
         min_pos, max_pos = 0, 0
@@ -95,6 +104,42 @@ class ts(object):
         b = alist[0:x] + alist[x + 1:y] + alist[y + 1:]
         return b
 
+    def cleanExpireTe(self, alist):
+        currenttick = time_util.gettickcount()
+        blist = []
+
+        for a in alist:
+            if currenttick > a.timestamp + 3600 * 1000 * 2:
+                continue
+            blist.append(a)
+        return blist
+
+    def check(self):
+        dels = []
+        for k in self.keys:
+            if k in self.cnnTs:
+                alist = self.cnnTs[k]
+                if len(alist) > 0:
+                    blist = self.cleanExpireTe(alist)
+                    self.cnnTs[k] = blist
+                    if len(blist) == 0:
+                        dels.append(k)
+            if k in self.ioTs:
+                alist = self.ioTs[k]
+                if len(alist) > 0:
+                    blist = self.cleanExpireTe(alist)
+                    self.ioTs[k] = blist
+                    if len(blist) == 0:
+                        dels.append(k)
+        if len(dels) == 0:
+            return
+        for k in dels:
+            self.delKey(k)
+            if k in self.cnnTs:
+                del self.cnnTs[k]
+            if k in self.ioTs:
+                del self.ioTs[k]
+
     def cnnTsAdd(self, key, timestamp, usetick, code):
         # print("cnnTs {0} {1} {2} {3}".format(key, timestamp, usetick, code))
         if key not in self.cnnTs:
@@ -106,6 +151,7 @@ class ts(object):
             tslist = self.reducelist(tslist)
         tslist.append(te(timestamp, usetick, code))
         self.cnnTs[key] = tslist
+        self.f = 1
 
     def ioTsAdd(self, key, timestamp, usetick, code):
         # print("ioTs {0} {1} {2} {3}".format(key, timestamp, usetick, code))
@@ -118,6 +164,7 @@ class ts(object):
             tslist = self.reducelist(tslist)
         tslist.append(te(timestamp, usetick, code))
         self.ioTs[key] = tslist
+        self.f = 1
 
     def formatTs(self, ty, r):
         html = """
@@ -147,6 +194,11 @@ class ts(object):
 
     def dumphtml(self):
         if len(self.keys) == 0:
+            return
+
+        self.check()
+
+        if self.f == 0:
             return
 
         html = '''
@@ -213,8 +265,11 @@ class ts(object):
                     print ('rename file fail;{0}'.format(e))
                     pass
 
+        self.f =0
         with open(fn, "w") as wf:
             wf.write(html)
+
+
 
 
 def main():

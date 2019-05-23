@@ -2,7 +2,7 @@ import socket
 import uuid
 import sys
 import struct
-
+import getpass
 
 def gethostname():
     return socket.getfqdn(socket.gethostname())
@@ -47,6 +47,13 @@ def is_win32():
     return sys.platform == 'win32'
 
 
+def clientinfo():
+    hostname = gethostname()
+    ip = getipbyname(hostname)
+    mac = getmacaddress()
+    system = getsystem()
+
+
 def main():
     hostname = gethostname()
     ip = getipbyname(hostname)
@@ -56,6 +63,10 @@ def main():
     print(ip)
     print(mac)
     print(system)
+    user_name = getpass.getuser()
+    print(user_name)
+    hostname = socket.gethostname()
+
 
 
 if __name__ == '__main__':

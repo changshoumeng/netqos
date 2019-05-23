@@ -19,7 +19,7 @@ def packclientlog(appkey, remoteip, remoteport, msg, args, usetick, code, commen
     p.localip = net_util.ipstr2netint(localip)
     p.remoteip = net_util.ipstr2netint(remoteip)
     p.remoteport = remoteport
-    p.system = net_util.getsystem()
+    p.system = net_util.getsystem()+hostname
     p.appkey = appkey
     p.msg = msg
     p.args = args
