@@ -39,7 +39,7 @@ class tl(object):
                 self.fail += 1
                 continue
 
-            if i > sizet - 10:
+            if i > sizet - 30:
                 self.recentlist.append(a.usetick)
 
             self.succ += 1
