@@ -15,13 +15,7 @@ import time
 
 import netstat
 
-import random
-
-import threading
-
 import multiprocessing
-
-import net_util
 
 socket.setdefaulttimeout(60)
 
@@ -38,6 +32,8 @@ class GracefulExitEvent(object):
     def __init__(self):
         self.exit_event = multiprocessing.Event()
         signal.signal(signal.SIGTERM, GracefulExitException.sigterm_handler)
+        signal.signal(signal.SIGINT, GracefulExitException.sigterm_handler)
+        print("signal.signal(signal.SIGTERM/SIGINT")
         pass
 
     def is_stop(self):
@@ -110,32 +106,6 @@ def ioconn(address):
     return is_ok, use_tick, None, err
 
 
-def tcpconntest():
-    address = CONFIG.address
-    print("start worker thread for tcpconntest:{0}".format(address))
-    i = 0
-    while True:
-        i += 1
-        if CONFIG.graceful_event.is_stop():
-            print("stop worker thread then exit")
-            break
-
-        if net_util.is_win32() and i > 10:
-            print("stop worker thread then exit win32")
-            break
-
-        stat = netstat.NetStat(CONFIG.APPKEY, address[0], address[1])
-        stat.start("conn")
-        is_ok, use_tick, s, err = ioconn(address)
-        if not is_ok:
-            stat.endFail(use_tick)
-            print("connect failed ", address, use_tick, err)
-            continue
-        print("connect ok ", address, use_tick)
-        stat.endSucc(use_tick)
-        time.sleep(0.1)
-
-
 def tcptest(address, cnt):
     stat = netstat.NetStat(CONFIG.APPKEY, address[0], address[1])
     stat.start("conn")
@@ -156,8 +126,6 @@ def tcptest(address, cnt):
             if cnt > 0 and i >= cnt:
                 break
 
-            if i > random.randint(10, cnt):
-                break
             stat = netstat.NetStat(CONFIG.APPKEY, address[0], address[1])
             stat.start("io")
 
@@ -204,15 +172,14 @@ def main():
     address = (args.host, int(args.port))
     print("will connect remote server:{0} connnum:{1} testnum:{2}".format(address, connnum, testnum))
 
-    CONFIG.APPKEY = "{0}-{1}-{2}-{3}".format(CONFIG.APPKEY, args.key, connnum, testnum)
+    if connnum==1:
+        CONFIG.APPKEY = "keeplive{0}-{1}-{2}-{3}".format(CONFIG.APPKEY, args.key, connnum, testnum)
+    else:
+        CONFIG.APPKEY = "mul{0}-{1}-{2}-{3}".format(CONFIG.APPKEY, args.key, connnum, testnum)
     print(CONFIG.APPKEY)
 
     CONFIG.address = address
     CONFIG.connnum = connnum
-    CONFIG.stopworker = False
-
-    t1 = threading.Thread(target=tcpconntest, name="tcpconntest")
-    t1.start()
 
     try:
         for i in range(connnum):
