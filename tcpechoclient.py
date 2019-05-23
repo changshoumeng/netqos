@@ -76,6 +76,20 @@ def ioconn(address):
     return is_ok, use_tick, None, err
 
 
+def tcpconn(address, cnt):
+    for i in range(cnt):
+        stat = netstat.NetStat(CONFIG.APPKEY, address[0], address[1])
+        stat.start("conn")
+        is_ok, use_tick, s, err = ioconn(address)
+        if not is_ok:
+            stat.endFail(use_tick)
+            print("connect failed ", address, use_tick, err)
+            continue
+        print("connect ok ", address, use_tick)
+        stat.endSucc(use_tick)
+        time.sleep(0.1)
+
+
 def tcptest(address, cnt):
     stat = netstat.NetStat(CONFIG.APPKEY, address[0], address[1])
     stat.start("conn")
@@ -144,6 +158,9 @@ def main():
 
     CONFIG.APPKEY = "{0}-{1}-{2}-{3}".format(CONFIG.APPKEY, args.key, connnum, testnum)
     print(CONFIG.APPKEY)
+
+    tcpconn(address, connnum)
+
     for i in range(connnum):
         tcptest(address, testnum)
 
