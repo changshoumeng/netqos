@@ -84,6 +84,7 @@ class NetStat:
         req = packclientlog(self.appkey, self.remoteip, self.remoteport, self.msg, self.args, self.usetick, self.code,
                             comment="")
         address = ("103.21.119.8", 44340)
+        #address = ("127.0.0.1", 44340)
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
             sock.sendto(req, address)

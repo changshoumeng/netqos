@@ -75,7 +75,7 @@ class ClientLogPkg(object):
     def unpack(self, data):
         fmt = ">QIIHII"
         size1 = sizeof(fmt)
-        print(size1)
+        # print(size1)
         if len(data) < size1:
             return 0
         head = data[:size1]

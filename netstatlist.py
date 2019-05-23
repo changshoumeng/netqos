@@ -14,13 +14,14 @@ class tl(object):
         self.alist = alist
         self.min = 100000000
         self.max = 0
-        self.avg = 0
+        self.avg = ""
         self.begin = 0
         self.end = 0
         self.succ = 0
         self.fail = 0
         self.sum = 0
         self.failrate = ""
+        self.recentlist = []
 
     def start(self):
         if len(self.alist) < 2:
@@ -29,10 +30,18 @@ class tl(object):
         self.begin = self.alist[0].timestamp
         self.end = self.alist[-1].timestamp
 
+        sizet = len(self.alist)
+
+        i = 0
         for a in self.alist:
+            i += 1
             if a.code != 0:
                 self.fail += 1
                 continue
+
+            if i > sizet - 10:
+                self.recentlist.append(a.usetick)
+
             self.succ += 1
             self.sum += a.usetick
             if a.usetick > self.max:
@@ -42,7 +51,9 @@ class tl(object):
                     self.min = a.usetick
 
         if self.succ > 0:
-            self.avg = self.sum / self.succ
+            avg = float(self.sum) / float(self.succ)
+            self.avg = "{0:.3f}ms".format(avg)
+
             total = self.fail + self.succ
             if self.fail > 0 and total >= 1000:
                 n = float(self.fail * 100) / float(total)
@@ -76,7 +87,6 @@ class ts(object):
                 return
         self.keys.append(key)
         print("add key:{0}".format(key))
-
 
     def delKey(self, key):
         for i in range(len(self.keys)):
@@ -147,7 +157,7 @@ class ts(object):
             self.addKey(key)
 
         tslist = self.cnnTs[key]
-        if len(tslist) > 100000:
+        if len(tslist) > 10000:
             tslist = self.reducelist(tslist)
         tslist.append(te(timestamp, usetick, code))
         self.cnnTs[key] = tslist
@@ -160,7 +170,7 @@ class ts(object):
             self.addKey(key)
 
         tslist = self.ioTs[key]
-        if len(tslist) > 100000:
+        if len(tslist) > 10000:
             tslist = self.reducelist(tslist)
         tslist.append(te(timestamp, usetick, code))
         self.ioTs[key] = tslist
@@ -177,6 +187,7 @@ class ts(object):
                 <td>{6}</td>
                 <td>{7}</td>
                 <td>{8}</td> 
+                <td>{9}</td>
                 </tr>
               """.format(
             ty,
@@ -186,7 +197,8 @@ class ts(object):
             r.fail, r.failrate,
             r.min,
             r.max,
-            r.avg
+            r.avg,
+            r.recentlist,
         )
 
         # print(html)
@@ -208,25 +220,37 @@ class ts(object):
                     <meta charset="UTF-8">
                     <title>stat</title>
                         <style type="text/css">
-                table
-                {
+                            table.gridtable {
+                    font-family: verdana,arial,sans-serif;
+                    font-size:11px;
+                    color:#333333;
+                    border-width: 1px;
+                    border-color: #666666;
                     border-collapse: collapse;
-                    border: none;
-                    width: 800px;
-                }
-                td
-                {
-                    border: solid #000 1px;
-                }
+                    }
+                    table.gridtable th {
+                    border-width: 1px;
+                    padding: 8px;
+                    border-style: solid;
+                    border-color: #666666;
+                    background-color: #dedede;
+                    }
+                    table.gridtable td {
+                    border-width: 1px;
+                    padding: 8px;
+                    border-style: solid;
+                    border-color: #666666;
+                    background-color: #ffffff;
+                    }
             </style>
                 </head>
                 <body>
                     '''
         for k in self.keys:
 
-            html += '''<p>客户端：{0}</p>'''.format(k)
+            html += '''<p><font size=2 color="red">客户端：{0}</font></p>'''.format(k)
             html += '''
-             <table><tr>
+             <table  class="gridtable"><tr>
                   <td>测试指标</td>
                   <td>开始时间</td>
                   <td>结束时间</td>
@@ -235,6 +259,7 @@ class ts(object):
                   <td>最小时延</td>
                   <td>最大时延</td>
                   <td>平均时延</td> 
+                  <td>最近数据</td>
                   </tr>
              '''
 
@@ -265,11 +290,9 @@ class ts(object):
                     print ('rename file fail;{0}'.format(e))
                     pass
 
-        self.f =0
+        self.f = 0
         with open(fn, "w") as wf:
             wf.write(html)
-
-
 
 
 def main():
