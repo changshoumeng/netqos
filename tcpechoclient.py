@@ -13,11 +13,17 @@ import time
 
 import netstat
 
+import random
+
+import threading
+
 socket.setdefaulttimeout(60)
 
 
 class CONFIG:
     APPKEY = "TCP"
+    address = ("", 0)
+    connnum = 10
 
 
 def gettickcount():
@@ -76,7 +82,10 @@ def ioconn(address):
     return is_ok, use_tick, None, err
 
 
-def tcpconn(address, cnt):
+def tcpconntest():
+    address = CONFIG.address
+    cnt = CONFIG.connnum
+    print("start worker thread for tcpconntest:{0} {1} ".format(address, cnt))
     for i in range(cnt):
         stat = netstat.NetStat(CONFIG.APPKEY, address[0], address[1])
         stat.start("conn")
@@ -108,6 +117,9 @@ def tcptest(address, cnt):
         while True:
             i += 1
             if cnt > 0 and i >= cnt:
+                break
+
+            if i > random.randint(10, cnt):
                 break
 
             stat = netstat.NetStat(CONFIG.APPKEY, address[0], address[1])
@@ -159,7 +171,11 @@ def main():
     CONFIG.APPKEY = "{0}-{1}-{2}-{3}".format(CONFIG.APPKEY, args.key, connnum, testnum)
     print(CONFIG.APPKEY)
 
-    tcpconn(address, connnum)
+    CONFIG.address = address
+    CONFIG.connnum = connnum
+
+    t1 = threading.Thread(target=tcpconntest, name="tcpconntest")
+    t1.start()
 
     for i in range(connnum):
         tcptest(address, testnum)
