@@ -28,7 +28,7 @@ class UdpServer:
             return
 
         key1 = "{0}:{1}{2}({3})".format(p.appkey, p.system, client_ip, net_util.netint2ipstr(p.localip))
-        key2 = "{0}:{1}".format(net_util.netint2ipstr(p.remoteip), p.remoteport)
+        key2 = "{0}:{1}:{2}".format(net_util.netint2ipstr(p.remoteip), p.remoteport,p.msg)
         status = cat.CAT_SUCCESS if p.code == 0 else cat.CAT_ERROR
         try:
             trans = cat.Transaction(key1, key2)
