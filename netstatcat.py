@@ -26,17 +26,12 @@ class UdpServer:
         if p.unpack(msg) <= 0:
             return
 
-        key = "{0}:{1}{2}({3})=>{4}:{5}".format(p.appkey,
-                                                p.system,
-                                                client_ip,
-                                                net_util.netint2ipstr(p.localip),
-                                                net_util.netint2ipstr(p.remoteip),
-                                                p.remoteport,
-                                                )
+        key1 = "{0}:{1}{2}({3})".format(p.appkey, p.system, client_ip, net_util.netint2ipstr(p.localip))
+        key2 = "{0}:{1}".format(net_util.netint2ipstr(p.remoteip), p.remoteport)
 
         status = "0" if p.code == 0 else "1"
         try:
-            trans = cat.Transaction("netqos_test", key)
+            trans = cat.Transaction(key1, key2)
             trans.set_status(status)
             trans.set_duration(p.usetick)
             trans.set_timestamp(p.timestamp)
@@ -85,6 +80,7 @@ def main():
     else:
         print("use default port:{0}".format(port))
 
+    cat.init("netqos_test", debug=True, logview=False)
     server = UdpServer(port)
     server.serve_forever()
 
