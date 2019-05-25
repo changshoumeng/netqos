@@ -13,6 +13,7 @@ import net_util
 import cat
 import os
 
+
 socket.setdefaulttimeout(5)
 
 
@@ -28,8 +29,7 @@ class UdpServer:
 
         key1 = "{0}:{1}{2}({3})".format(p.appkey, p.system, client_ip, net_util.netint2ipstr(p.localip))
         key2 = "{0}:{1}".format(net_util.netint2ipstr(p.remoteip), p.remoteport)
-
-        status = "0" if p.code == 0 else "1"
+        status = cat.CAT_SUCCESS if p.code == 0 else cat.CAT_ERROR
         try:
             trans = cat.Transaction(key1, key2)
             trans.set_status(status)
@@ -67,6 +67,8 @@ def main():
         print("not exist file:{0},to support cat".format(fn))
         return
 
+    cat.init("netqos_test", debug=True, logview=True)
+
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", "--port", help="bind port for udp")
     args = parser.parse_args()
@@ -80,7 +82,6 @@ def main():
     else:
         print("use default port:{0}".format(port))
 
-    cat.init("netqos_test", debug=True, logview=False)
     server = UdpServer(port)
     server.serve_forever()
 

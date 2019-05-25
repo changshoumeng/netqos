@@ -6,4 +6,4 @@
 
  nohup python  httpserver.py   2>&1 1>& log/httpserver.log  &
 
- nohup python  netstatsvr.py   2>&1 1>& log/netstatsvr.log  &
+ nohup python  netstatsvr.py   2>&1 1>& log/netstatcat.log  &

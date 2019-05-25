@@ -61,3 +61,12 @@
     测试指标	开始时间	结束时间	成功个数	失败个数	最小时延	最大时延	平均时延
     connection	20190522 19:39:19	20190522 19:49:01	453	0|	19	23	19
     io	20190522 19:39:19	20190522 19:49:02	4075	0|	37	59	40
+    
+    
+## Py Cat 安装环境
+
+     sudo yum install python-devel*
+     sudo yum install gcc
+    sudo yum install  libffi*
+    sudo easy_install cffi
+    
